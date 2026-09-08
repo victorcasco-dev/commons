@@ -1,0 +1,658 @@
+openapi: 3.0.3
+info:
+  title: Sistema de Reserva de Tutorías
+  description: Contrato compartido de la API. Los DTO se generan al compilar este módulo commons.
+  version: 0.0.1
+servers:
+  - url: https://api.tutorias.local
+    description: Gateway
+tags:
+  - name: Usuarios
+  - name: Profesores
+  - name: Disponibilidad
+  - name: Reservas
+  - name: Catalogos
+  - name: Notificaciones
+  - name: Admin
+
+paths:
+  /usuarios:
+    get:
+      tags: [Usuarios]
+      summary: Listar usuarios
+      operationId: listarUsuarios
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+        - name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Listado paginado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioPageDto'
+    post:
+      tags: [Usuarios]
+      summary: Registrar usuario (solo administrador)
+      operationId: crearUsuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioCreateDto'
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioDto'
+
+  /usuarios/{id}:
+    get:
+      tags: [Usuarios]
+      summary: Obtener usuario
+      operationId: obtenerUsuario
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioDto'
+        '404':
+          description: No encontrado
+
+  /profesores/{id}/lineas:
+    get:
+      tags: [Profesores]
+      summary: Líneas de investigación del profesor
+      operationId: listarLineasProfesor
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Detalle cabecera-detalle
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfesorLineaDto'
+    post:
+      tags: [Profesores]
+      summary: Agregar línea de investigación al profesor
+      operationId: agregarLineaProfesor
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfesorLineaCreateDto'
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfesorLineaDto'
+
+  /franjas:
+    get:
+      tags: [Disponibilidad]
+      summary: Buscar franjas disponibles
+      operationId: buscarFranjas
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+        - name: idProfesor
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: idLinea
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: fecha
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Franjas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FranjaHorariaPageDto'
+    post:
+      tags: [Disponibilidad]
+      summary: Crear franja horaria
+      operationId: crearFranja
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FranjaHorariaCreateDto'
+      responses:
+        '201':
+          description: Creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FranjaHorariaDto'
+
+  /reservas:
+    get:
+      tags: [Reservas]
+      summary: Listar reservas
+      operationId: listarReservas
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+        - name: estado
+          in: query
+          schema:
+            $ref: '#/components/schemas/EstadoReservaDto'
+      responses:
+        '200':
+          description: Reservas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservaPageDto'
+    post:
+      tags: [Reservas]
+      summary: Crear reserva con tipos de consulta
+      operationId: crearReserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservaCreateDto'
+      responses:
+        '201':
+          description: Creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservaDto'
+        '409':
+          description: Horario no disponible
+
+  /reservas/{id}:
+    get:
+      tags: [Reservas]
+      summary: Obtener reserva
+      operationId: obtenerReserva
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservaDto'
+
+  /reservas/{id}/cancelacion:
+    post:
+      tags: [Reservas]
+      summary: Cancelar reserva
+      operationId: cancelarReserva
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Cancelada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservaDto'
+
+  /catalogos/lineas-investigacion:
+    get:
+      tags: [Catalogos]
+      summary: Catálogo de líneas de investigación
+      operationId: listarLineasInvestigacion
+      responses:
+        '200':
+          description: Catálogo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CatalogoDto'
+
+  /catalogos/tipos-consulta:
+    get:
+      tags: [Catalogos]
+      summary: Catálogo de tipos de consulta
+      operationId: listarTiposConsulta
+      responses:
+        '200':
+          description: Catálogo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CatalogoDto'
+
+  /contacto:
+    post:
+      tags: [Notificaciones]
+      summary: Formulario de contacto público
+      operationId: enviarContacto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsultaContactoCreateDto'
+      responses:
+        '201':
+          description: Enviado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaContactoDto'
+
+  /admin/configuraciones:
+    get:
+      tags: [Admin]
+      summary: Listar configuraciones
+      operationId: listarConfiguraciones
+      responses:
+        '200':
+          description: Configuraciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConfiguracionDto'
+
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    Size:
+      name: size
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  schemas:
+    TipoUsuarioDto:
+      type: string
+      enum: [ALUMNO, PROFESOR, ADMINISTRADOR]
+    NivelExperienciaDto:
+      type: string
+      enum: [BASICO, MEDIO, EXPERTO]
+    EstadoFranjaDto:
+      type: string
+      enum: [DISPONIBLE, OCUPADA, CANCELADA]
+    EstadoReservaDto:
+      type: string
+      enum: [PENDIENTE, CONFIRMADA, CANCELADA, COMPLETADA]
+    TipoNotificacionDto:
+      type: string
+      enum: [CONFIRMACION_RESERVA, RECORDATORIO, CANCELACION, CONTACTO]
+    CanalNotificacionDto:
+      type: string
+      enum: [EMAIL]
+    EstadoNotificacionDto:
+      type: string
+      enum: [PENDIENTE, ENVIADA, ERROR]
+
+    UsuarioDto:
+      type: object
+      required: [id, email, nombre, apellido, tipo, activo]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        nombre:
+          type: string
+        apellido:
+          type: string
+        tipo:
+          $ref: '#/components/schemas/TipoUsuarioDto'
+        activo:
+          type: boolean
+        matricula:
+          type: string
+        tituloAcademico:
+          type: string
+        cargo:
+          type: string
+        idProfesorTutor:
+          type: string
+          format: uuid
+
+    UsuarioCreateDto:
+      type: object
+      required: [email, password, nombre, apellido, tipo]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        nombre:
+          type: string
+        apellido:
+          type: string
+        tipo:
+          $ref: '#/components/schemas/TipoUsuarioDto'
+        matricula:
+          type: string
+        tituloAcademico:
+          type: string
+        cargo:
+          type: string
+        idProfesorTutor:
+          type: string
+          format: uuid
+
+    CatalogoDto:
+      type: object
+      required: [id, nombre, activa]
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        activa:
+          type: boolean
+
+    ProfesorLineaDto:
+      type: object
+      required: [id, idProfesor, linea, nivelExperiencia]
+      properties:
+        id:
+          type: string
+          format: uuid
+        idProfesor:
+          type: string
+          format: uuid
+        linea:
+          $ref: '#/components/schemas/CatalogoDto'
+        nivelExperiencia:
+          $ref: '#/components/schemas/NivelExperienciaDto'
+
+    ProfesorLineaCreateDto:
+      type: object
+      required: [idLineaInvestigacion, nivelExperiencia]
+      properties:
+        idLineaInvestigacion:
+          type: string
+          format: uuid
+        nivelExperiencia:
+          $ref: '#/components/schemas/NivelExperienciaDto'
+
+    FranjaHorariaDto:
+      type: object
+      required: [id, idProfesor, fecha, horaInicio, horaFin, estado]
+      properties:
+        id:
+          type: string
+          format: uuid
+        idProfesor:
+          type: string
+          format: uuid
+        fecha:
+          type: string
+          format: date
+        horaInicio:
+          type: string
+          format: time
+        horaFin:
+          type: string
+          format: time
+        estado:
+          $ref: '#/components/schemas/EstadoFranjaDto'
+
+    FranjaHorariaCreateDto:
+      type: object
+      required: [idProfesor, fecha, horaInicio, horaFin]
+      properties:
+        idProfesor:
+          type: string
+          format: uuid
+        fecha:
+          type: string
+          format: date
+        horaInicio:
+          type: string
+          format: time
+        horaFin:
+          type: string
+          format: time
+
+    DetalleReservaDto:
+      type: object
+      required: [id, tipoConsulta]
+      properties:
+        id:
+          type: string
+          format: uuid
+        tipoConsulta:
+          $ref: '#/components/schemas/CatalogoDto'
+        comentario:
+          type: string
+
+    DetalleReservaCreateDto:
+      type: object
+      required: [idTipoConsulta]
+      properties:
+        idTipoConsulta:
+          type: string
+          format: uuid
+        comentario:
+          type: string
+
+    ReservaDto:
+      type: object
+      required: [id, idAlumno, franja, estado, detalles]
+      properties:
+        id:
+          type: string
+          format: uuid
+        idAlumno:
+          type: string
+          format: uuid
+        franja:
+          $ref: '#/components/schemas/FranjaHorariaDto'
+        estado:
+          $ref: '#/components/schemas/EstadoReservaDto'
+        detalles:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetalleReservaDto'
+
+    ReservaCreateDto:
+      type: object
+      required: [idAlumno, idFranja, detalles]
+      properties:
+        idAlumno:
+          type: string
+          format: uuid
+        idFranja:
+          type: string
+          format: uuid
+        detalles:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/DetalleReservaCreateDto'
+
+    ConsultaContactoDto:
+      type: object
+      required: [id, nombre, email, mensaje]
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        email:
+          type: string
+          format: email
+        mensaje:
+          type: string
+
+    ConsultaContactoCreateDto:
+      type: object
+      required: [nombre, email, mensaje]
+      properties:
+        nombre:
+          type: string
+        email:
+          type: string
+          format: email
+        mensaje:
+          type: string
+
+    ConfiguracionDto:
+      type: object
+      required: [id, clave, valor]
+      properties:
+        id:
+          type: string
+          format: uuid
+        clave:
+          type: string
+        valor:
+          type: string
+        descripcion:
+          type: string
+
+    PlantillaMailDto:
+      type: object
+      required: [id, codigo, asunto, cuerpoHtml, activa]
+      properties:
+        id:
+          type: string
+          format: uuid
+        codigo:
+          type: string
+        asunto:
+          type: string
+        cuerpoHtml:
+          type: string
+        activa:
+          type: boolean
+
+    NotificacionDto:
+      type: object
+      required: [id, idUsuario, tipo, canal, estado]
+      properties:
+        id:
+          type: string
+          format: uuid
+        idUsuario:
+          type: string
+          format: uuid
+        tipo:
+          $ref: '#/components/schemas/TipoNotificacionDto'
+        canal:
+          $ref: '#/components/schemas/CanalNotificacionDto'
+        estado:
+          $ref: '#/components/schemas/EstadoNotificacionDto'
+        payload:
+          type: object
+          additionalProperties: true
+        enviadaAt:
+          type: string
+          format: date-time
+        errorMensaje:
+          type: string
+
+    PageMetadataDto:
+      type: object
+      properties:
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    UsuarioPageDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsuarioDto'
+        page:
+          $ref: '#/components/schemas/PageMetadataDto'
+
+    FranjaHorariaPageDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/FranjaHorariaDto'
+        page:
+          $ref: '#/components/schemas/PageMetadataDto'
+
+    ReservaPageDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservaDto'
+        page:
+          $ref: '#/components/schemas/PageMetadataDto'
+
+    ErrorDto:
+      type: object
+      properties:
+        mensaje:
+          type: string
+        codigo:
+          type: string
