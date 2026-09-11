@@ -1,30 +1,30 @@
 -- liquibase formatted sql
 
 -- changeset shared:008-seed
--- comment: Datos iniciales de catálogos, configuración y plantillas de mail
+-- comment: Initial catalog, settings and email template data
 
-INSERT INTO linea_investigacion (nombre, descripcion, activa)
+INSERT INTO research_line (name, description, active)
 VALUES
-    ('Inteligencia Artificial', 'Aprendizaje automático, visión y PLN', TRUE),
-    ('Redes', 'Redes de computadoras y comunicaciones', TRUE),
-    ('Bases de Datos', 'Modelado, SQL y sistemas de datos', TRUE),
-    ('Ingeniería de Software', 'Arquitectura, calidad y procesos', TRUE),
-    ('Seguridad Informática', 'Criptografía, aplicaciones y redes seguras', TRUE);
+    ('Artificial Intelligence', 'Machine learning, computer vision and NLP', TRUE),
+    ('Networks', 'Computer networks and communications', TRUE),
+    ('Databases', 'Data modeling, SQL and data systems', TRUE),
+    ('Software Engineering', 'Architecture, quality and processes', TRUE),
+    ('Information Security', 'Cryptography, applications and secure networks', TRUE);
 
-INSERT INTO tipo_consulta (nombre, descripcion, activa)
+INSERT INTO consultation_type (name, description, active)
 VALUES
-    ('Revisión de metodología', 'Revisión del enfoque metodológico de la tesis', TRUE),
-    ('Corrección de capítulo', 'Lectura y corrección de un capítulo', TRUE),
-    ('Defensa preliminar', 'Simulacro o preparación de defensa', TRUE),
-    ('Avance general', 'Seguimiento general del progreso', TRUE);
+    ('Methodology review', 'Review of the thesis methodological approach', TRUE),
+    ('Chapter correction', 'Reading and correction of a chapter', TRUE),
+    ('Preliminary defense', 'Defense rehearsal or preparation', TRUE),
+    ('General progress', 'Overall progress follow-up', TRUE);
 
-INSERT INTO configuracion (clave, valor, descripcion)
+INSERT INTO setting (setting_key, value, description)
 VALUES
-    ('duracion_reunion_minutos', '60', 'Duración estándar de una tutoría'),
-    ('anticipacion_minima_horas', '24', 'Horas mínimas de anticipación para reservar');
+    ('meeting_duration_minutes', '60', 'Default tutoring meeting duration'),
+    ('min_advance_hours', '24', 'Minimum hours in advance to book a slot');
 
-INSERT INTO plantilla_mail (codigo, asunto, cuerpo_html, activa)
+INSERT INTO email_template (code, subject, html_body, active)
 VALUES
-    ('CONFIRMACION_RESERVA', 'Confirmación de tutoría', '<p>Tu reserva de tutoría fue confirmada.</p>', TRUE),
-    ('RECORDATORIO', 'Recordatorio de tutoría', '<p>Recordatorio: tenés una tutoría próxima.</p>', TRUE),
-    ('CANCELACION', 'Cancelación de tutoría', '<p>La reserva de tutoría fue cancelada.</p>', TRUE);
+    ('RESERVATION_CONFIRMATION', 'Tutoring reservation confirmed', '<p>Your tutoring reservation was confirmed.</p>', TRUE),
+    ('REMINDER', 'Tutoring reminder', '<p>Reminder: you have an upcoming tutoring session.</p>', TRUE),
+    ('CANCELLATION', 'Tutoring cancellation', '<p>The tutoring reservation was cancelled.</p>', TRUE);

@@ -1,19 +1,19 @@
 -- liquibase formatted sql
 
 -- changeset shared:007-indexes
--- comment: Índices para búsquedas de disponibilidad, reservas y reportes
+-- comment: Indexes for availability, reservations and reports
 
-CREATE INDEX idx_franja_profesor_fecha_estado
-    ON franja_horaria (id_profesor, fecha, estado);
+CREATE INDEX idx_time_slot_professor_date_status
+    ON time_slot (professor_id, slot_date, status);
 
-CREATE INDEX idx_reserva_alumno_estado
-    ON reserva (id_alumno, estado);
+CREATE INDEX idx_reservation_student_status
+    ON reservation (student_id, status);
 
-CREATE INDEX idx_profesor_linea_linea
-    ON profesor_linea (id_linea_investigacion);
+CREATE INDEX idx_professor_research_line_line
+    ON professor_research_line (research_line_id);
 
-CREATE INDEX idx_notificacion_usuario_estado
-    ON notificacion (id_usuario, estado);
+CREATE INDEX idx_notification_user_status
+    ON notification (user_id, status);
 
-CREATE INDEX idx_consulta_contacto_email
-    ON consulta_contacto (email);
+CREATE INDEX idx_contact_inquiry_email
+    ON contact_inquiry (email);

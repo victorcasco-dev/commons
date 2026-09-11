@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.reservas</groupId>
 	<artifactId>commons</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>reservas-commons</name>
-	<description>Librería compartida: entities JPA, Liquibase, DTOs OpenAPI y excepciones del sistema de tutorías</description>
+	<description>Shared library: JPA entities, Liquibase, OpenAPI DTOs and common exceptions for the tutoring reservation system</description>
 
 	<properties>
 		<java.version>21</java.version>
