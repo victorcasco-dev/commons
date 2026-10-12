@@ -38,7 +38,9 @@ public final class DotenvLoader {
         List<Path> candidates = List.of(
                 Path.of(userDir, ".env"),
                 Path.of(userDir, "commons", ".env"),
-                Path.of(userDir).resolve("..").resolve(".env").normalize()
+                Path.of(userDir).resolve("..").resolve(".env").normalize(),
+                Path.of(userDir).resolve("..").resolve("commons").resolve("commons").resolve(".env").normalize(),
+                Path.of(userDir).resolve("..").resolve("commons").resolve(".env").normalize()
         );
 
         return candidates.stream()
